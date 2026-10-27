@@ -407,10 +407,10 @@ static void print_records(struct observer *b) {
             struct record value={0};
             if(!bpf_map_lookup_elem(fd,snext,&value)) {
                 struct record *r=&value;__u32 kind=0;
-                if(pass) {struct mmap_key k;memcpy(&k,snext,sizeof(k));kind=k.write ? 2 : 1;}
+                if(pass) {struct mmap_key k;memcpy(&k,snext,sizeof(k));kind=mmap_key_write(&k) ? 2 : 1;}
                 __u64 sem;memcpy(&sem,snext+(pass ? 0 : 8),sizeof(sem));
                 printf("%s{\"tgid\":%u,\"tid\":%u,\"start_ns\":%llu,\"acquired_ns\":%llu,\"stage\":%u,\"stack_id\":%d,\"lock_kind\":%u,\"lock_addr\":\"0x%llx\"}",
-                    saved ? "," : "",(__u32)(r->id>>32),(__u32)r->id,(unsigned long long)r->start_ns,(unsigned long long)r->acquired_ns,r->stage,r->stack_id,kind,(unsigned long long)sem);saved++;
+                    saved ? "," : "",(__u32)(r->id>>32),(__u32)r->id,(unsigned long long)r->start_ns,(unsigned long long)r->acquired_ns,r->stage,r->stack_id,kind,(unsigned long long)(pass ? mmap_key_sem((const struct mmap_key *)snext) : sem));saved++;
             }memcpy(skey,snext,sizeof(skey));rc=bpf_map_get_next_key(fd,skey,snext);
         }
     }
