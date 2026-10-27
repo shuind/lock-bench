@@ -25,7 +25,7 @@ static __always_inline void warm_before_insert(const struct mmap_key *key,struct
     m->warm_hits=bpf_map_lookup_elem(&warm_twin,key)!=0;
 #elif WARM_MODE>=3
     // This key cannot be produced by a real mmap event (sem/task are nonzero).
-    struct mmap_key scratch={.reserved=bpf_get_smp_processor_id()+1};
+    struct mmap_key scratch=mmap_key_make(0x1000 + bpf_get_smp_processor_id()*8,0,0,0);
     struct record value={.stack_id=-1,.stage=1};
 #if WARM_MODE==3
     m->warm_errors=bpf_map_update_elem(&mm_records,&scratch,&value,BPF_NOEXIST)!=0;

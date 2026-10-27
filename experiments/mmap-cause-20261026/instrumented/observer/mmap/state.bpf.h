@@ -21,8 +21,7 @@ static __always_inline struct mmap_key mm_key_task(__u64 sem,bool write,struct t
     __u64 birth;
     if(bpf_core_enum_value_exists(enum bpf_func_id___task,BPF_FUNC_get_current_task_btf___task))birth=task->start_boottime;
     else birth=BPF_CORE_READ(task,start_boottime);
-    return (struct mmap_key){.sem=sem,.task=(__u64)task,
-        .task_start_ns=birth,.write=write};
+    return mmap_key_make(sem, (__u64)task, birth, write);
 }
 static __always_inline struct mmap_key mm_key(__u64 sem,bool write) {
     return mm_key_task(sem,write,mm_task());
@@ -88,16 +87,16 @@ static __always_inline bool mm_start(struct counter_values *c,void *ctx,__u64 se
 }
 static __always_inline void mm_return_key(struct counter_values *c,const struct mmap_key *key,bool success,
         struct task_struct *task) {
-    bool write=key->write;struct record *r=mm_lookup(key);
+    bool write=mmap_key_write(key);struct record *r=mm_lookup(key);
     // mmap_write_downgrade emits read ACQUIRE before downgrade_write executes.
     bool implicit=false;
 #ifdef OBSERVER_MMAP_EVENTS
     if(!r && !write && success && (settings.rw&1)) {
-        struct mmap_key wk=*key;wk.write=1;implicit=mm_lookup(&wk)!=NULL;
+        struct mmap_key wk=*key;mmap_key_set_write(&wk,1);implicit=mm_lookup(&wk)!=NULL;
     }
 #endif
     if(!r && !implicit)return;
-    if(!mm_current_task(key->sem,task))count_diagnostic(c,MM_RETURN_OLD);
+    if(!mm_current_task(mmap_key_sem(key),task))count_diagnostic(c,MM_RETURN_OLD);
     if(success)count(c,write ? MATCH_WRITE_ACQUIRE : MATCH_READ_ACQUIRE);
     else count(c,write ? MATCH_WRITE_FAILED : MATCH_READ_FAILED);
     if(!r)return;
@@ -132,7 +131,7 @@ static __always_inline bool mm_downgrade_key(struct counter_values *c,void *ctx,
     count(c,MATCH_DOWNGRADE);count(c,MATCH_WRITE_RELEASE);
     // Retire the ended write phase first, also freeing capacity for the read key.
     mm_delete(c,&key);if(!(settings.rw&1))return false;
-    key.write=0;if(!mm_insert(c,ctx,&key,true,admission ? &admission->generation : NULL))return false;
+    mmap_key_set_write(&key,0);if(!mm_insert(c,ctx,&key,true,admission ? &admission->generation : NULL))return false;
     if(admission)admission->key=key;
     if(implicit)count(c,MATCH_READ_ACQUIRE);return true;
 }
@@ -148,7 +147,7 @@ static int mm_timer_cb(void *map,struct mmap_key *key,struct timer_record *timer
     struct event *e=bpf_ringbuf_reserve(&events,sizeof(*e),0);
     if(!e) {count_diagnostic(c,RING_DROPPED);return 0;}
     *e=(struct event){.state=*r,.now_ns=bpf_ktime_get_ns(),
-        .lock_kind=key->write ? 2 : 1,.lock_addr=key->sem};
+        .lock_kind=mmap_key_write(key) ? 2 : 1,.lock_addr=mmap_key_sem(key)};
     bpf_ringbuf_submit(e,0);count(c,RING_SENT);return 0;
 }
 static __always_inline void mm_arm(struct counter_values *c,const struct mmap_admission *admission) {
