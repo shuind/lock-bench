@@ -145,7 +145,7 @@ static void live_candidate(struct observer *b,int fd,const unsigned char *key,
         (r.stage==1 || r.stage==2 || (mmap_state && r.stage==3)) && !(r.stage==1 && r.acquired_ns) &&
         (r.stage!=2 || (r.acquired_ns>=r.start_ns && r.acquired_ns<=now))) {
         struct event e={.state=r,.now_ns=now};memcpy(&e.lock_addr,key+(mmap_state ? 0 : 8),sizeof(e.lock_addr));
-        if(mmap_state) {struct mmap_key k;memcpy(&k,key,sizeof(k));e.lock_kind=k.write ? 2 : 1;}
+        if(mmap_state) {struct mmap_key k;memcpy(&k,key,sizeof(k));e.lock_kind=mmap_key_write(&k) ? 2 : 1;e.lock_addr=mmap_key_sem(&k);}
         if(live_reported(b,&e))return;
         if(bpf_map_lookup_elem(fd,key,confirm) || memcmp(value,confirm,sizeof(r)))return;
         if(mmap_state && mmap_cleanup_candidate(b,fd,key,value))return;
