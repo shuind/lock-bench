@@ -16,7 +16,27 @@ struct config {
 struct trace_key { __u64 task, sem; };
 struct record { __u64 id, start_ns, acquired_ns; __s32 stack_id; __u32 stage; };
 // Birth time keeps records distinct when a task pointer is reused after exit.
-struct mmap_key { __u64 sem, task, task_start_ns; __u32 write, reserved; };
+/* rw_semaphore is naturally aligned, so sem bit 0 can encode the mode. */
+struct mmap_key { __u64 sem_tagged, task, task_start_ns; };
+static inline __u64 mmap_key_sem(const struct mmap_key *key) {
+    return key->sem_tagged & ~(__u64)1;
+}
+static inline int mmap_key_write(const struct mmap_key *key) {
+    return (key->sem_tagged & 1) != 0;
+}
+static inline void mmap_key_set_write(struct mmap_key *key, int write) {
+    key->sem_tagged = (key->sem_tagged & ~(__u64)1) | (write ? 1 : 0);
+}
+static inline struct mmap_key mmap_key_make(__u64 sem, __u64 task,
+        __u64 task_start_ns, int write) {
+    return (struct mmap_key){.sem_tagged=sem | (write ? 1 : 0),
+        .task=task, .task_start_ns=task_start_ns};
+}
+static inline int mmap_key_equal(const struct mmap_key *a, const struct mmap_key *b) {
+    return a->sem_tagged == b->sem_tagged && a->task == b->task &&
+        a->task_start_ns == b->task_start_ns;
+}
+_Static_assert(sizeof(struct mmap_key) == 24, "mmap_key must stay compact");
 struct event { struct record state; __u64 now_ns; __u32 lock_kind, reserved; __u64 lock_addr; };
 enum counter {
     TOTAL_START, TOTAL_ACQUIRE, TOTAL_END, MATCH_START, MATCH_ACQUIRE, MATCH_END,
