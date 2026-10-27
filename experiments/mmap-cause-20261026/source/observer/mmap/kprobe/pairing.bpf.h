@@ -45,8 +45,7 @@ static __always_inline void mm_kreturn_task(struct counter_values *c,bool write,
     if(!p->count)return;
     __u32 i=p->count-1;if(i>=4) {count_diagnostic(c,PAIR_ERRORS);return;}
     if(p->accepted[i]) {
-        struct mmap_key record={.sem=p->sem[i],.task=(__u64)task,
-            .task_start_ns=saved->task_start_ns,.write=write};
+        struct mmap_key record=mmap_key_make(p->sem[i],(__u64)task,saved->task_start_ns,write);
         mm_return_key(c,&record,success,task);
     }
     p->count=i;if(!i)mm_pending_count(c,false);
@@ -79,7 +78,7 @@ static __always_inline void mm_kreturn_hash(struct counter_values *c,bool write,
     struct pending *p=&saved->calls;
     __u32 i=p->count-1;if(i>=4) {count_diagnostic(c,PAIR_ERRORS);return;}
     if(p->accepted[i]) {
-        struct mmap_key record={.sem=p->sem[i],.task=key.task,.task_start_ns=saved->task_start_ns,.write=write};
+        struct mmap_key record=mmap_key_make(p->sem[i],key.task,saved->task_start_ns,write);
         mm_return_key(c,&record,success,task);
     }
     p->count=i;if(!i && bpf_map_delete_elem(&mm_calls,&key))count_diagnostic(c,PAIR_ERRORS);
