@@ -1,0 +1,11 @@
+{
+  "id": "cgroup/kprobe",
+  "target": "cgroup",
+  "method": "kprobe",
+  "timer": false,
+  "programs": [
+    "cg_down",
+    "cg_ret",
+    "cg_up"
+  ]
+}

@@ -1,0 +1,22 @@
+Scoped write START components; ns/entry. Medians of three per-run means, not invocation p50.
+System deltas bracket preparation and teardown as well as the workload; do not treat them as exact callback-window metrics.
+case | front | identity/record | insert | finish | total | total MADN | total range | clock reference
+fentry-kbuild | 25.77 | 18.63 | 137.71 | 13.95 | 197.24 | 2.19 | 195.76..235.73 | 12.72
+fentry-kbuild-pinned | 26.25 | 22.07 | 147.30 | 14.72 | 208.62 | 9.19 | 202.42..224.10 | 12.45
+fentry-kbuild-total | 0.00 | 0.00 | 0.00 | 0.00 | 167.42 | 2.68 | 165.61..181.00 | 12.82
+fentry-http-32 | 95.60 | 43.36 | 720.08 | 26.72 | 886.17 | 15.29 | 875.85..907.85 | 36.08
+fentry-http-32-pinned | 89.70 | 34.16 | 549.31 | 23.28 | 696.21 | 16.98 | 684.76..709.30 | 22.86
+fentry-http-32-total | 0.00 | 0.00 | 0.00 | 0.00 | 817.14 | 14.65 | 807.26..834.95 | 37.69
+tracepoint-kbuild | 33.35 | 20.66 | 161.23 | 14.83 | 225.98 | 17.38 | 214.25..264.47 | 14.23
+tracepoint-http-32 | 130.13 | 62.98 | 775.90 | 37.55 | 1004.53 | 0.50 | 1004.19..1021.78 | 39.74
+native-hot-1-single | 13.96 | 13.48 | 100.58 | 11.75 | 149.14 | 14.25 | 138.14..158.75 | 12.02
+native-hot-32-all | 31.37 | 16.18 | 140.50 | 12.79 | 205.28 | 5.54 | 201.55..216.20 | 14.11
+native-hot-32-single | 14.19 | 13.45 | 116.21 | 11.71 | 155.70 | 8.47 | 149.98..167.02 | 11.80
+native-sleep-1-single | 28.04 | 26.06 | 148.27 | 13.44 | 213.33 | 3.04 | 211.28..221.44 | 11.93
+native-busy-1-single | 18.95 | 14.27 | 130.72 | 12.27 | 182.65 | 3.71 | 148.78..185.15 | 11.84
+native-hash-1-single | 28.56 | 22.20 | 258.06 | 13.96 | 326.82 | 1.51 | 291.89..327.84 | 12.14
+native-hash-small-1-single | 31.00 | 19.21 | 181.08 | 13.20 | 229.60 | 25.35 | 212.49..297.03 | 11.76
+native-pair-hot-1-single | 13.91 | 13.40 | 129.22 | 11.84 | 168.49 | 26.65 | 150.28..186.47 | 11.90
+  pairs: 169.07 ns / 167.91 ns
+native-pair-hash-1-single | 23.77 | 17.43 | 194.86 | 13.21 | 250.24 | 6.03 | 234.04..254.31 | 11.98
+  pairs: 312.46 ns / 177.40 ns

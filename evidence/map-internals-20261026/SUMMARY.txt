@@ -1,0 +1,8 @@
+Map mechanism controls, ns/call. Instrumented call averages, then median across rounds.
+Warming time is ADDITIONAL work, not a net optimization. Graph times include tracer overhead.
+case | insert | insertion MADN | total | warm additional
+warm-lookup-other | 162.86 | 31.56 | 282.52 | 41.56
+warm-lookup-target | 169.23 | 11.95 | 272.82 | 37.22
+warm-none | 202.21 | 5.64 | 253.95 | 0.00
+warm-recycle-node | 135.11 | 0.60 | 537.32 | 341.20
+warm-recycle-other | 174.98 | 8.01 | 519.27 | 280.23

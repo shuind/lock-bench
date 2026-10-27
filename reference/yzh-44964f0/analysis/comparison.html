@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>观测开启与关闭对照</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color:#203047;background:#f5f7fa;font-size:15px}
+*{box-sizing:border-box}body{margin:0}main{max-width:1160px;margin:auto;padding:38px 24px 70px}h1{font-size:28px;letter-spacing:-.5px;margin:0 0 12px}h2{font-size:19px;margin:0 0 16px}p{line-height:1.75;margin:8px 0;color:#58697e}.lead{max-width:900px;margin-bottom:24px}.cards{display:grid;grid-template-columns:1fr 1fr;gap:18px}.cards article,section{background:white;border:1px solid #e0e6ed;border-radius:12px;padding:24px}.cards h2{font-size:15px;color:#58697e}.cards strong{font-size:32px;font-weight:650}.cards small{font-size:14px;margin-left:8px;font-weight:400}.cards code{font-size:12px;color:#687b91;overflow-wrap:anywhere}section{margin-top:20px}table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}th,td{padding:12px 14px;border-bottom:1px solid #e8edf3;text-align:right}thead th{font-weight:500;color:#687b91;font-size:13px}th:first-child,td:first-child{text-align:left}tbody th{font-weight:500}th small{display:inline;margin-left:8px;color:#8795a6;font-size:12px}.scroll{overflow-x:auto}.note{font-size:13px;color:#687b91}.legend{display:flex;gap:22px;font-size:13px;color:#58697e}.legend label{display:flex;align-items:center;gap:7px}.legend i{width:20px;height:3px;display:inline-block;background:#2263cc}.legend .off{background:#7c8797}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}select{padding:7px 10px;border:1px solid #ccd5e0;border-radius:6px;background:white;color:#203047;font:inherit;font-size:13px}svg{display:block;width:100%;touch-action:pan-y}.plot{position:relative}.tip{background:#203047;color:white;position:absolute;pointer-events:none;border-radius:6px;padding:8px 12px;font-size:12px;line-height:1.7;white-space:pre;top:5px;right:15px;display:none}.quality{margin:0;padding-left:20px;font-size:13px;color:#58697e;line-height:1.9}.quality li{overflow-wrap:anywhere}.locks{font-size:12px}.locks th,.locks td{padding:10px 9px;text-align:left}.locks td:nth-child(4),.locks td:nth-child(5){text-align:right}details{border-top:1px solid #e8edf3;padding:13px 0}summary{cursor:pointer;font-size:13px;line-height:1.8}pre{font:12px/1.8 ui-monospace,Consolas,monospace;background:#f5f7fa;padding:15px;border-radius:6px;overflow:auto}.footer{margin-top:24px;font-size:12px;color:#7d899a}noscript{color:#92612d}.badge{font-size:12px;font-weight:500;color:#536a86;background:#eaf0f7;padding:4px 8px;border-radius:5px;vertical-align:middle;margin-left:12px}
+@media(max-width:650px){main{padding:24px 12px}.cards{grid-template-columns:1fr}section,.cards article{padding:18px}h1{font-size:23px}.badge{display:block;width:fit-content;margin:10px 0}th,td{padding:10px 7px;font-size:12px}}
+</style>
+</head>
+<body><main>
+<h1>观测开启与关闭对照<span class="badge">整机系统指标</span></h1>
+<p class="lead">差值＝开启观测－关闭观测。两轮应来自同一主机，并保持业务流量和工作量可比。这里描述整机资源变化；业务吞吐、延迟和错误率需要结合业务自身数据判断。</p>
+<div class="cards">@@CARDS@@</div>
+<section>
+<h2>指标汇总</h2>
+<div class="scroll"><table><thead><tr><th>指标</th><th>关闭观测</th><th>开启观测</th><th>差值</th></tr></thead><tbody>@@ROWS@@</tbody></table></div>
+<p class="note">CPU 按有效区间累计计数计算，busy 不含 idle 和 iowait；内存＝MemTotal－MemAvailable。内存、负载按实际时长加权，PSI 使用区间停顿比例。峰值仅指采样捕获的峰值，不代表瞬时最大值。不可用指标不按零处理。</p>
+</section>
+<section>
+<div class="toolbar"><h2 style="margin:0">时间曲线</h2>
+<select id="metric" aria-label="选择曲线指标"><option value="cpu">CPU 利用率 · %</option><option value="memory">内存占用 · GiB</option><option value="load">1 分钟系统负载</option><option value="psi_cpu">CPU PSI some · %</option><option value="psi_memory">内存 PSI some · %</option><option value="psi_io">I/O PSI some · %</option></select></div>
+<div class="legend"><label><input type="checkbox" id="show-off" checked><i class="off"></i>关闭观测</label><label><input type="checkbox" id="show-on" checked><i></i>开启观测</label></div>
+<div class="plot"><svg id="chart" viewBox="0 0 1080 300" role="img" aria-label="两轮系统指标时间曲线"></svg><div id="tip" class="tip"></div></div>
+<p class="note" id="chart-note">横轴是各轮采样窗口开始后的分钟数，两轮按相对时间对齐；缺失区间断开显示。移动鼠标可查看采样值。</p><noscript>启用 JavaScript 后可查看曲线；上方汇总表仍可直接阅读。</noscript>
+</section>
+<section>
+<h2>数据完整性与采集情况</h2><ul class="quality">@@NOTES@@</ul>
+</section>
+<section>
+<h2>锁观测汇总</h2><div class="scroll"><table class="locks"><thead><tr><th>轮次</th><th>对象</th><th>接入 / 采集 / 超时 / 阈值</th><th>目标开始次数</th><th>累计慢提示</th><th>错误计数</th></tr></thead><tbody>@@LOCK_ROWS@@</tbody></table></div>
+<p class="note">慢提示可能包含同一操作不同阶段的提示，不等于独立锁数量。次数属于整机，锁采集窗口与系统采样窗口不严格重合。fork 只覆盖 cgroup_can_fork → cgroup_post_fork 阶段。</p>
+<h2 style="margin-top:26px">mmap_lock 入口命中</h2>
+<div class="scroll"><table class="entry-counts"><thead><tr><th>轮次</th><th>接入方式</th><th>方向</th><th>入口触发</th><th>mmap_lock 命中</th><th>命中率</th></tr></thead><tbody>@@MMAP_ROWS@@</tbody></table></div>
+<p class="note">fentry/kprobe 的入口触发包括挂载的通用 rwsem 函数对其它锁的调用；tracepoint/raw 的触发来自 mmap_lock 事件。命中为识别目标并成功纳入跟踪的入口，不含写锁降为读锁。命中率＝命中÷触发；零触发时显示 —，缺字段显示“未记录”。</p>
+</section>
+<section>
+<h2>慢提示样例</h2><p class="note">每个对象最多展示导出明细中持续时间最长的 8 条，不代表全部慢操作。时长是提示时已持续的时间，不是最终耗时；这里展示已保存的入口栈地址，函数名请查看原始观测日志。</p>@@EVENTS@@
+</section>
+<p class="footer">离线读取已有结果，不加载探针、不启动业务。时间显示为北京时间。报告只嵌入绘图所需的指标序列。</p>
+</main>
+<script id="chart-data" type="application/json">@@DATA@@</script>
+<script>
+(()=>{
+const data=JSON.parse(document.getElementById('chart-data').textContent),svg=document.getElementById('chart'),tip=document.getElementById('tip');
+const colors={off:'#7c8797',on:'#2263cc'},labels={off:'关闭观测',on:'开启观测'},metrics={cpu:'CPU 利用率 · %',memory:'内存占用 · GiB',load:'1 分钟系统负载',psi_cpu:'CPU PSI some · %',psi_memory:'内存 PSI some · %',psi_io:'I/O PSI some · %'};
+const left=65,right=1050,top=24,bottom=250,ns='http://www.w3.org/2000/svg';let selected=[],key='cpu',maxT=1,maxY=1;
+function node(tag,attrs,text){const e=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,String(v)));if(text!==undefined)e.textContent=text;svg.appendChild(e);return e;}
+function render(){svg.replaceChildren();tip.style.display='none';key=document.getElementById('metric').value;selected=['off','on'].filter(x=>document.getElementById('show-'+x).checked);maxT=Math.max(1,...Object.values(data).map(a=>a.length?a[a.length-1].t:0));let high=0,values=0;
+selected.forEach(arm=>data[arm].forEach(p=>{if(p[key]!==null){high=Math.max(high,p[key]);values++;}}));maxY=Math.max(high*1.1,key==='load'?1:key==='memory'?.25:1);
+for(let i=0;i<=4;i++){let y=bottom-i*(bottom-top)/4;node('line',{x1:left,x2:right,y1:y,y2:y,stroke:'#e6ebf1'});node('text',{x:left-12,y:y+4,'text-anchor':'end',fill:'#7b899a','font-size':12},(maxY*i/4).toFixed(maxY<5?2:1));let x=left+i*(right-left)/4;node('text',{x,y:bottom+25,'text-anchor':'middle',fill:'#7b899a','font-size':12},(maxT*i/240).toFixed(1));}
+node('text',{x:right,y:bottom+46,'text-anchor':'end',fill:'#7b899a','font-size':12},'采样开始后 · 分钟');
+selected.forEach(arm=>{let path='',started=false;data[arm].forEach(p=>{if(p[key]===null){started=false;return;}path+=(started?'L':'M')+(left+p.t/maxT*(right-left)).toFixed(2)+','+(bottom-p[key]/maxY*(bottom-top)).toFixed(2);started=true;});node('path',{d:path,fill:'none',stroke:colors[arm],'stroke-width':1.6,'stroke-dasharray':arm==='off'?'5 2':'none'});});
+if(!values)node('text',{x:(left+right)/2,y:135,'text-anchor':'middle',fill:'#7b899a','font-size':15},selected.length?'该指标没有有效采样':'请选择要显示的轮次');
+node('line',{id:'cursor',x1:left,x2:left,y1:top,y2:bottom,stroke:'#a7b4c4','stroke-dasharray':'3 3',visibility:'hidden'});
+}
+function nearest(rows,t){let lo=0,hi=rows.length-1;while(lo<hi){let mid=(lo+hi)>>1;if(rows[mid].t<t)lo=mid+1;else hi=mid;}return lo&&Math.abs(rows[lo-1].t-t)<Math.abs(rows[lo].t-t)?rows[lo-1]:rows[lo];}
+svg.addEventListener('mousemove',event=>{let box=svg.getBoundingClientRect(),x=(event.clientX-box.left)*1080/box.width;if(x<left||x>right){tip.style.display='none';return;}let t=(x-left)/(right-left)*maxT,cursor=document.getElementById('cursor');cursor.setAttribute('x1',x);cursor.setAttribute('x2',x);cursor.setAttribute('visibility','visible');tip.textContent=metrics[key]+'\n'+selected.map(arm=>{let p=nearest(data[arm],t);return labels[arm]+'  '+(p[key]===null?'不可用':p[key].toFixed(3))+'  ('+(p.t/60).toFixed(2)+' min)';}).join('\n');tip.style.display=selected.length?'block':'none';});
+svg.addEventListener('mouseleave',()=>{tip.style.display='none';document.getElementById('cursor').setAttribute('visibility','hidden');});
+['metric','show-off','show-on'].forEach(id=>document.getElementById(id).addEventListener('change',render));render();
+})();
+</script>
+</body></html>

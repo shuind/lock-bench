@@ -1,0 +1,10 @@
+{
+  "checks": "PASS_CONTROLS_ONLY",
+  "runs": 15,
+  "expected_runs": 15,
+  "planned_runs": 21,
+  "graph_supported": false,
+  "skipped_runs": 6,
+  "original_sysctl": "1",
+  "final_sysctl": "1"
+}

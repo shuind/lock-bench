@@ -1,0 +1,10 @@
+{
+  "id": "cgroup/contention",
+  "target": "cgroup",
+  "method": "contention",
+  "timer": false,
+  "programs": [
+    "ct_begin",
+    "ct_end"
+  ]
+}

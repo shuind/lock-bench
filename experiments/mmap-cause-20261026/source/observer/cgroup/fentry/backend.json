@@ -1,0 +1,11 @@
+{
+  "id": "cgroup/fentry",
+  "target": "cgroup",
+  "method": "fentry",
+  "timer": true,
+  "programs": [
+    "cf_down",
+    "cf_ret",
+    "cf_up"
+  ]
+}

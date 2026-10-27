@@ -1,0 +1,108 @@
+{
+  "checks": "PASS_CONTROLS_ONLY",
+  "runs": 15,
+  "configurations": {
+    "warm-recycle-other": 3,
+    "warm-none": 3,
+    "warm-recycle-node": 3,
+    "warm-lookup-target": 3,
+    "warm-lookup-other": 3
+  },
+  "details": [
+    {
+      "case": "warm-recycle-node",
+      "repeat": 0,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-recycle-other",
+      "repeat": 0,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-lookup-other",
+      "repeat": 0,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-lookup-target",
+      "repeat": 0,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-none",
+      "repeat": 0,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-recycle-other",
+      "repeat": 1,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-lookup-other",
+      "repeat": 1,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-recycle-node",
+      "repeat": 1,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-none",
+      "repeat": 1,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-lookup-target",
+      "repeat": 1,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-lookup-target",
+      "repeat": 2,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-recycle-node",
+      "repeat": 2,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-lookup-other",
+      "repeat": 2,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-none",
+      "repeat": 2,
+      "calls": 2048,
+      "checks": "PASS"
+    },
+    {
+      "case": "warm-recycle-other",
+      "repeat": 2,
+      "calls": 2048,
+      "checks": "PASS"
+    }
+  ],
+  "function_graph_measured": false,
+  "unavailable": [
+    "Internal function times",
+    "Spinlock slowpath call counts"
+  ]
+}

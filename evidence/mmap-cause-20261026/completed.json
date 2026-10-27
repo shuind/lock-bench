@@ -1,0 +1,8 @@
+{
+  "checks": "PASS",
+  "runs": 51,
+  "expected_runs": 51,
+  "original_sysctl": "1",
+  "final_sysctl": "1",
+  "local_functional_smoke": false
+}

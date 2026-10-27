@@ -1,0 +1,12 @@
+{
+  "id": "mmap/raw",
+  "target": "mmap",
+  "method": "raw",
+  "timer": false,
+  "programs": [
+    "mr_start",
+    "mr_return",
+    "mr_release",
+    "mt_downgrade"
+  ]
+}

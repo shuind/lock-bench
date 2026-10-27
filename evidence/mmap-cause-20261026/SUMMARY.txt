@@ -1,0 +1,19 @@
+Scoped write START component timings, ns. Means per run, then median across runs.
+case | mode | calls | front | identity/record | insert | finish | total | clock reference | total MADN
+fentry-http-32 | segments | 4096 | 95.60 | 43.36 | 720.08 | 26.72 | 886.17 | 36.08 | 15.29
+fentry-http-32-pinned | segments | 4096 | 89.70 | 34.16 | 549.31 | 23.28 | 696.21 | 22.86 | 16.98
+fentry-http-32-total | total | 4096 | 0.00 | 0.00 | 0.00 | 0.00 | 817.14 | 37.69 | 14.65
+fentry-kbuild | segments | 304332 | 25.77 | 18.63 | 137.71 | 13.95 | 197.24 | 12.72 | 2.19
+fentry-kbuild-pinned | segments | 304332 | 26.25 | 22.07 | 147.30 | 14.72 | 208.62 | 12.45 | 9.19
+fentry-kbuild-total | total | 304338 | 0.00 | 0.00 | 0.00 | 0.00 | 167.42 | 12.82 | 2.68
+native-busy-1-single | segments | 1024 | 18.95 | 14.27 | 130.72 | 12.27 | 182.65 | 11.84 | 3.71
+native-hash-1-single | segments | 1024 | 28.56 | 22.20 | 258.06 | 13.96 | 326.82 | 12.14 | 1.51
+native-hash-small-1-single | segments | 1024 | 31.00 | 19.21 | 181.08 | 13.20 | 229.60 | 11.76 | 25.35
+native-hot-1-single | segments | 65536 | 13.96 | 13.48 | 100.58 | 11.75 | 149.14 | 12.02 | 14.25
+native-hot-32-all | segments | 65536 | 31.37 | 16.18 | 140.50 | 12.79 | 205.28 | 14.11 | 5.54
+native-hot-32-single | segments | 65536 | 14.19 | 13.45 | 116.21 | 11.71 | 155.70 | 11.80 | 8.47
+native-pair-hash-1-single | segments | 2048 | 23.77 | 17.43 | 194.86 | 13.21 | 250.24 | 11.98 | 6.03
+native-pair-hot-1-single | segments | 65536 | 13.91 | 13.40 | 129.22 | 11.84 | 168.49 | 11.90 | 26.65
+native-sleep-1-single | segments | 1024 | 28.04 | 26.06 | 148.27 | 13.44 | 213.33 | 11.93 | 3.04
+tracepoint-http-32 | segments | 4096 | 130.13 | 62.98 | 775.90 | 37.55 | 1004.53 | 39.74 | 0.50
+tracepoint-kbuild | segments | 343165 | 33.35 | 20.66 | 161.23 | 14.83 | 225.98 | 14.23 | 17.38

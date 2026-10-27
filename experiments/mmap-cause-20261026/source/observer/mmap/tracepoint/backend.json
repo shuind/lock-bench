@@ -1,0 +1,12 @@
+{
+  "id": "mmap/tracepoint",
+  "target": "mmap",
+  "method": "tracepoint",
+  "timer": false,
+  "programs": [
+    "mt_start",
+    "mt_return",
+    "mt_release",
+    "mt_downgrade"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "checks": "PASS_WITH_WARNING",
+  "formal_runs": 84,
+  "complete_blocks": 28,
+  "original_completed_checks": "PASS",
+  "initial_bpf_stats_enabled": "1",
+  "current_bpf_stats_enabled": "0",
+  "bpf_stats_state_drift": true,
+  "summary_recomputed": true
+}

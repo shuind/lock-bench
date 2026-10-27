@@ -1,0 +1,55 @@
+{
+  "reason": "This kernel does not offer function_graph in a private instance; global tracer was not changed",
+  "cases": [
+    {
+      "name": "pair-hot-plain",
+      "workload": "native",
+      "mode": "none",
+      "graph": false,
+      "work": "pair-hot",
+      "operations": 512,
+      "repeat": 0
+    },
+    {
+      "name": "pair-hot-graph",
+      "workload": "native",
+      "mode": "none",
+      "graph": true,
+      "work": "pair-hot",
+      "operations": 512,
+      "repeat": 0
+    },
+    {
+      "name": "pair-hash-plain",
+      "workload": "native",
+      "mode": "none",
+      "graph": false,
+      "work": "pair-hash",
+      "operations": 512,
+      "repeat": 0
+    },
+    {
+      "name": "pair-hash-graph",
+      "workload": "native",
+      "mode": "none",
+      "graph": true,
+      "work": "pair-hash",
+      "operations": 512,
+      "repeat": 0
+    },
+    {
+      "name": "http-32-plain",
+      "workload": "http",
+      "mode": "none",
+      "graph": false,
+      "repeat": 0
+    },
+    {
+      "name": "http-32-graph",
+      "workload": "http",
+      "mode": "none",
+      "graph": true,
+      "repeat": 0
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+Kbuild headers_install; yzh collector; all values in seconds.
+jobs=1; collect=stack; timeout=none; all-host read+write observation.
+Columns are medians of arms and separately medians of paired differences; they need not add exactly.
+method | metric | A | B | B-A | C-B | C-A | C | total delta MADN
+tracepoint | wall_s | 8.309170 | 8.886716 | 0.634488 | 0.571521 | 1.132705 | 9.425036 | 0.061165
+tracepoint | workload_cpu_s | 8.484943 | 9.072379 | 0.637549 | 0.559053 | 1.155486 | 9.614395 | 0.092967
+tracepoint | combined_cpu_s | 8.516005 | 9.106830 | 0.642268 | 0.559597 | 1.159596 | 9.649872 | 0.094106
+raw | wall_s | 8.304261 | 8.836482 | 0.485981 | 0.612233 | 1.131403 | 9.424792 | 0.064112
+raw | workload_cpu_s | 8.492014 | 9.018068 | 0.486674 | 0.613176 | 1.122372 | 9.614954 | 0.068318
+raw | combined_cpu_s | 8.523483 | 9.051895 | 0.487458 | 0.613244 | 1.125808 | 9.650387 | 0.069544
+fentry | wall_s | 8.315245 | 10.129875 | 1.833870 | 7.884331 | 2.354301 | 18.002041 | 4.314332
+fentry | workload_cpu_s | 8.490362 | 10.364239 | 1.882534 | 2.102625 | 2.409127 | 12.466864 | 1.384676
+fentry | combined_cpu_s | 8.521622 | 10.399329 | 1.887750 | 2.158285 | 2.416474 | 12.557614 | 1.416319
+kprobe | wall_s | 8.294738 | 10.753286 | 2.425628 | 1.079930 | 3.491243 | 11.825574 | 0.096792
+kprobe | workload_cpu_s | 8.489303 | 10.997310 | 2.482458 | 1.099192 | 3.563692 | 12.077273 | 0.090508
+kprobe | combined_cpu_s | 8.521176 | 11.036722 | 2.490889 | 1.101129 | 3.574392 | 12.119460 | 0.090529

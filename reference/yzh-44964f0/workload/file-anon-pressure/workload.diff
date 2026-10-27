@@ -1,0 +1,91 @@
+--- upstream/main.cpp
++++ workload.cpp
+@@ -19,6 +19,7 @@
+ #include <cstring>
+ 
+ #include <malloc.h>
++#include "progress.h"
+ 
+ #include <sys/mman.h>
+ #include <sys/stat.h>
+@@ -167,7 +168,7 @@
+ void randomMemoryWorker(size_t memory_per_thread, size_t thread_num) {
+     initWorker(thread_num, "memory");
+     std::random_device rd;
+-    std::mt19937_64 gen(rd());
++    std::mt19937_64 gen(0x20261014ULL + thread_num);
+ 
+     constexpr size_t node_size = sizeof(size_t) + 2 * sizeof(void*);
+     size_t elements = memory_per_thread / node_size;
+@@ -185,6 +186,9 @@
+             data.emplace_back(gen());
+ 
+         data.sort();
++        if (iteration == 1) benchReady(thread_num,2,0,data.size());
++        else benchAllocate(data.size());
++        benchIteration();
+ 
+         LOG("Iteration #" << iteration);
+         size_t started_ns = getNs();
+@@ -198,9 +202,12 @@
+                 if (++steps >= max_steps) {
+                     steps = 0;
+                     size_t ns = getNs();
++                    benchVisit(max_steps);
+                     size_t elements_needed = std::min<size_t>(elements, elements1 + double(ns - started_ns) / iteration_time_ns * elements2);
++                    size_t size_before = data.size();
+                     while (data.size() < elements_needed)
+                         data.insert(iter, gen());
++                    benchAllocate(data.size() - size_before);
+                     if (data.size() == elements && currentThreadIsFull()) {
+                         stop_iteration = true;
+                         break;
+@@ -252,7 +259,7 @@
+ void sequentialMappedFileWorker(size_t memory_per_thread, size_t thread_num) {
+     initWorker(thread_num, "file");
+     std::random_device rd;
+-    std::mt19937 gen(rd());
++    std::mt19937 gen(0x20261014U + thread_num);
+ 
+     // Prepare a file
+     std::string filename(writable_path + "/tmpfile." + std::to_string(thread_num));
+@@ -274,6 +281,12 @@
+             currentThreadIsEmpty();
+ 
+         MappedFile mapped(filename);
++        if (iteration == 1) {
++            if (fsync(mapped.fd)) throw std::runtime_error("File fsync failed");
++            if (posix_fadvise(mapped.fd,0,0,POSIX_FADV_DONTNEED)) throw std::runtime_error("File cache preparation failed");
++            benchReady(thread_num,1,mapped.size,0);
++        }
++        benchIteration();
+         size_t * content = static_cast<size_t*>(mapped.data);
+ 
+         LOG("Iteration #" << iteration);
+@@ -289,6 +302,7 @@
+                 if (++steps >= max_steps) {
+                     steps = 0;
+                     size_t ns = getNs();
++                    benchVisit(max_steps);
+                     size_t available = double(ns - started_ns) / iteration_time_ns * elements;
+                     if (available < i) {
+                         restart = true;
+@@ -481,15 +495,17 @@
+         delay_memory_ms = std::stoull(argv[6]);
+ 
+         threads = memory_threads + file_threads;
++        benchInit(threads);
+ 
+         LOG("Stress PID: " << getpid());
+ 
+         std::vector<std::thread> workers;
+         for (int i = 0; i < file_threads; ++i)
+             workers.emplace_back(sequentialMappedFileWorker, file_bytes / file_threads, workers.size());
+-        std::this_thread::sleep_for(std::chrono::milliseconds(delay_memory_ms));
++        if (!benchHeader) std::this_thread::sleep_for(std::chrono::milliseconds(delay_memory_ms));
+         for (int i = 0; i < memory_threads; ++i)
+             workers.emplace_back(randomMemoryWorker, memory_bytes / memory_threads, workers.size());
++        if (benchHeader) benchSession();
+         for (auto& t : workers)
+             t.join();
+     } catch (const std::exception & e) {

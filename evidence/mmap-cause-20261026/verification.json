@@ -1,0 +1,35 @@
+{
+  "checks": "PASS_WITH_NOTE",
+  "runs": 51,
+  "cases": 17,
+  "rounds": 3,
+  "program_records": 699,
+  "expected_http_request_write_entries": 4096,
+  "http_service_extra_entries": [
+    {
+      "case": "fentry-http-32-pinned",
+      "repeat": 1,
+      "expected_request_write_entries": 4096,
+      "observed_service_write_entries": 4097,
+      "extra_service_entries": 1,
+      "maximum_mean_bias_ns": 3.640380859375,
+      "interpretation": "Same service TGID, not another process. Additional write-entry source was not captured; no sample was discarded."
+    },
+    {
+      "case": "tracepoint-http-32",
+      "repeat": 2,
+      "expected_request_write_entries": 4096,
+      "observed_service_write_entries": 4097,
+      "extra_service_entries": 1,
+      "maximum_mean_bias_ns": 6.240478515625,
+      "interpretation": "Same service TGID, not another process. Additional write-entry source was not captured; no sample was discarded."
+    }
+  ],
+  "native_counts_exact": true,
+  "paired_counts_exact": true,
+  "fixed_cpu_verified": true,
+  "component_histogram_cpu_totals_verified": true,
+  "workloads_verified": true,
+  "errors_and_misses_zero": true,
+  "public_report_changed": false
+}

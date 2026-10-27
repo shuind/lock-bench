@@ -1,0 +1,11 @@
+{
+  "id": "fork/kprobe",
+  "target": "fork",
+  "method": "kprobe",
+  "timer": false,
+  "programs": [
+    "fk_begin",
+    "fk_end",
+    "fk_return"
+  ]
+}
