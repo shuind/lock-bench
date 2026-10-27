@@ -62,4 +62,33 @@ SHA-256 是文件校验负载的实际工作，不是为了仓库或产物做哈
 3. 如果当前机器不能测出 map 内部，明确原因，设计在支持 PMU 或独立函数图的 Linux 环境中的可重复实验；不要把缺失数据记为零，也不要臆测缓存层级、频率或原子重试次数。
 4. 给出对照、原始记录、每轮均值、样本数和波动范围。若提出优化，要保留配对、降级、状态、入口栈及活跃记录，比较**业务＋观测器＋控制器**的 CPU 与业务表现；预热自身成本也必须计入。
 
-`experiments/` 保存原始诊断和负载脚本，帮助阅读实现和实验设计；部分构建脚本依赖测试机上另行准备的内核源码、生成的 BTF 头、fixture 和相邻实验目录，路径并非开箱即用。运行前请根据本机环境准备输入并检查依赖，不要将其中原服务器路径当作通用命令。仓库只含源码和裁剪后的分轮数据，不含已编译程序或大型内核树。
+## 在自己的 Linux 环境运行
+
+仓库提供 [准备入口](experiments/mmap-cause-20261026/prepare_repro.py)：它把采集器和诊断程序复制到单独的工作目录，生成 HTTP 文件、从本机内核 BTF 生成头文件并编译程序。原始实验脚本也保留在仓库中。
+
+需要 Linux x86-64 或 ARM64、支持相应挂点的内核及 `/sys/kernel/btf/vmlinux`、Python 3.9+、能编译 BPF 的 Clang、gcc、bpftool，以及 libbpf、libelf、zlib 和 OpenSSL 的开发文件。运行时需要加载 BPF 的管理员权限。fentry 和 mmap_lock tracepoint 是否可用取决于实际内核。
+
+先做 HTTP 和单线程受控负载的短测：
+
+```bash
+git clone https://github.com/shuind/lock-bench.git
+cd lock-bench/experiments/mmap-cause-20261026
+python3 prepare_repro.py --workdir /tmp/mmap-lock-repro
+sudo python3 /tmp/mmap-lock-repro/run.py --local-smoke \
+  --only fentry-http-32 tracepoint-http-32 native-hot-1-single
+```
+
+输出位于工作目录新建的 `results-*`，包括 `rows.json`、`summary.json`、每轮诊断和 collector 数据。短测的 HTTP 请求数为 128，每种条件只运行一次，用于检查能否运行；正式对照去掉 `--local-smoke` 并设置 `--rounds 3`。准备过程生成的是新的 4 MiB 测试文件，内容不保证与原服务器文件相同，采集数据也受本机内核和硬件影响，不能当作原机复现。
+
+要运行 Kbuild，提供一份完整 Linux 源码，准备入口会将其复制到新的工作目录，再在副本上执行 `headers_install`：
+
+```bash
+python3 prepare_repro.py --workdir /tmp/mmap-lock-kbuild \
+  --kernel-src /path/to/linux-source
+sudo python3 /tmp/mmap-lock-kbuild/run.py --rounds 3 \
+  --only fentry-kbuild fentry-http-32 tracepoint-kbuild tracepoint-http-32
+```
+
+默认导出当前机器架构的 UAPI 头；可指定 `--kernel-arch arm64` 或 `--kernel-arch x86`。源码树和架构不同，导出的文件数量、字节数也会不同。实验会清理**工作目录内复制的** `kernel/usr/include`，使每轮都重新导出。若系统未启用 BPF 运行统计，准备后的运行器使用临时统计 FD，运行结束后关闭，不修改系统 `bpf_stats_enabled` 设置。
+
+上述准备和 HTTP、fentry、tracepoint、原生及 Kbuild 短测已在本地 WSL Linux x86-64 验证；WSL 数据不能作为 ARM64 服务器的结果。内核不同或缺少权限时，应检查具体加载错误。仓库只含源码和裁剪后的分轮数据，不含已编译程序或大型内核树。
